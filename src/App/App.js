@@ -97,25 +97,31 @@ class App extends Component {
     return (
       <>
         {['/', '/folder/:folderId'].map(path =>
+          <ErrorBoundary>
           <Route
             exact
             key={path}
             path={path}
             component={NoteListMain}
           />
+          </ErrorBoundary>
         )}
         <Route
           path='/note/:noteId'
           component={NotePageMain}
         />
-        <Route
+        <ErrorBoundary>
+          <Route
           path='/add-folder'
           component={AddFolder}
         />
-        <Route
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <Route
           path='/add-note'
           component={AddNote}
         />
+        </ErrorBoundary>
       </>
     )
   }
@@ -129,7 +135,7 @@ class App extends Component {
       deleteNote: this.handleDeleteNote,
     }
     return (
-      <ErrorBoundary>
+      
       <ApiContext.Provider value={value}>
         <div className='App'>
           <nav className='App__nav'>
@@ -147,7 +153,7 @@ class App extends Component {
           </main>
         </div>
       </ApiContext.Provider>
-      </ErrorBoundary>
+    
     )
   }
 }
