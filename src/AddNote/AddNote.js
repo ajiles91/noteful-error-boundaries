@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import NotefulForm from '../NotefulForm/NotefulForm'
 import ApiContext from '../ApiContext'
 import config from '../config'
+import ValidationError from './ValidationError';
 import './AddNote.css'
 
 export default class AddNote extends Component {
@@ -10,7 +11,63 @@ export default class AddNote extends Component {
       push: () => { }
     },
   }
+
+  
+
   static contextType = ApiContext;
+
+  validateFolder(name){
+    let errorMsg = this.state.validFolderMessage;
+    let hasError = false;
+    if(this.context.folders.find((folder) => folder.name === name) === undefined){
+      errorMsg = 'Please select a valid folder'
+      hasError = true;
+    } else {
+      errorMsg = '';
+      hasError = false;
+    }
+      this.setState({
+        validFolderMessage: errorMsg,
+        validFolder: !hasError
+    })
+  }
+
+  validateNoteName(name){
+    let errorMsg = this.state.validNoteMessage;
+    let hasError = false;
+    name = name.trim();
+    if(name.length < 3){
+      errorMsg = 'Please enter a note name at least 3 characters long';
+      hasError = true;
+    } else {
+      errorMsg = '';
+      hasError = false;
+    }
+    this.setState({
+      validMessage: errorMsg, 
+      validNoteName: !hasError
+    })
+  }
+
+  validateNoteContent(content){
+    let errorMsg = this.state.validContentMessage;
+    let hasError = false;
+    content = content.trim();
+    if(content.length < 3){
+      errorMsg = 'Please enter content that is at least 3 characters long';
+      hasError = true;
+    } else {
+      errorMsg = '';
+      hasError = false;
+    }
+    this.setState({
+      validContentMessage: errorMsg,
+      validContent: !hasError
+    })
+  }
+
+
+
 
   handleSubmit = e => {
     e.preventDefault()
@@ -73,6 +130,7 @@ export default class AddNote extends Component {
             </select>
           </div>
           <div className='buttons'>
+          <ValidationError hasError={!this.state.folderValid} message={this.state.validMessage}/>
             <button type='submit'>
               Add note
             </button>

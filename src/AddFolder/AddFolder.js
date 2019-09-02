@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import NotefulForm from '../NotefulForm/NotefulForm'
 import ApiContext from '../ApiContext'
+import ValidationError from './ValidationError';
 import config from '../config'
 import './AddFolder.css'
 
@@ -11,6 +12,31 @@ export default class AddFolder extends Component {
     },
   }
   static contextType = ApiContext;
+
+  validateFolder(inputValue) {
+    let errorMsg = this.state.validMessage;
+    let hasError = false;
+
+    inputValue = inputValue.trim();
+    if (inputValue.length === 0) {
+      errorMsg = 'Folder Name is required';
+      hasError = true;
+
+    } else if (inputValue.length < 3) {
+      errorMsg = 'Folder Name must be at least 3 characters';
+      hasError = true;
+
+    } else {
+      errorMsg = '';
+      hasError = false;
+    }
+
+    this.setState({
+      validMessage: errorMsg,
+      folderValid: !hasError
+    })
+
+  }
 
   handleSubmit = e => {
     e.preventDefault()
@@ -47,7 +73,9 @@ export default class AddFolder extends Component {
             <label htmlFor='folder-name-input'>
               Name
             </label>
+            <ValidationError hasError={!this.state.folderValid} message={this.state.validMessage}/>
             <input type='text' id='folder-name-input' name='folder-name' />
+           
           </div>
           <div className='buttons'>
             <button type='submit'>
