@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import NotefulForm from '../NotefulForm/NotefulForm'
 import ApiContext from '../ApiContext'
 import config from '../config'
-import ValidationError from './ValidationError';
+import ValidationError from '../ValidationError/ValidationError'
 import './AddNote.css'
 
 export default class AddNote extends Component {
