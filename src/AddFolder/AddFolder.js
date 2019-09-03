@@ -6,6 +6,17 @@ import config from '../config'
 import './AddFolder.css'
 
 export default class AddFolder extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      nameValid: false,
+      name: '',
+      validationMessages: {
+        name: '',
+      }
+    }
+  }
+
   static defaultProps = {
     history: {
       push: () => { }
@@ -13,30 +24,29 @@ export default class AddFolder extends Component {
   }
   static contextType = ApiContext;
 
-  validateFolder(inputValue) {
-    let errorMsg = this.state.validMessage;
+  validateName(fieldValue){
+    const fieldErrors = {...this.state.validationMessages};
     let hasError = false;
-
-    inputValue = inputValue.trim();
-    if (inputValue.length === 0) {
-      errorMsg = 'Folder Name is required';
+  
+    fieldValue = fieldValue.trim();
+    if(fieldValue.length === 0){
+      fieldErrors.name = 'Name is required';
       hasError = true;
-
-    } else if (inputValue.length < 3) {
-      errorMsg = 'Folder Name must be at least 3 characters';
-      hasError = true;
-
-    } else {
-      errorMsg = '';
-      hasError = false;
     }
-
     this.setState({
-      validMessage: errorMsg,
-      folderValid: !hasError
-    })
-
+      validationMessages: fieldErrors,
+      nameValid: !hasError
+    }, this.formValid);
   }
+  formValid(){
+    this.setState({
+      formValid: this.state.nameValid
+    });
+  }
+  updateName(name){
+    this.setState({name}, ()=>{this.validateName(name)});
+  }
+  
 
   handleSubmit = e => {
     e.preventDefault()
@@ -60,9 +70,12 @@ export default class AddFolder extends Component {
         this.props.history.push(`/folder/${folder.id}`)
       })
       .catch(error => {
-        console.error({ error })
+        console.error('folder added', { error })
       })
-  }
+      
+    }
+  
+
 
   render() {
     return (
@@ -87,3 +100,4 @@ export default class AddFolder extends Component {
     )
   }
 }
+

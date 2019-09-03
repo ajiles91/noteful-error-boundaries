@@ -6,68 +6,48 @@ import ValidationError from '../ValidationError/ValidationError'
 import './AddNote.css'
 
 export default class AddNote extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      nameValid: false,
+      name: '',
+      validationMessages: {
+        name: '',
+      }
+    }
+  }
+
   static defaultProps = {
     history: {
       push: () => { }
     },
   }
 
-  
-
   static contextType = ApiContext;
-
-  validateFolder(name){
-    let errorMsg = this.state.validFolderMessage;
+  
+  validateName(fieldValue) {
+    const fieldErrors = {...this.state.validationMessages};
     let hasError = false;
-    if(this.context.folders.find((folder) => folder.name === name) === undefined){
-      errorMsg = 'Please select a valid folder'
-      hasError = true;
-    } else {
-      errorMsg = '';
-      hasError = false;
-    }
-      this.setState({
-        validFolderMessage: errorMsg,
-        validFolder: !hasError
-    })
-  }
 
-  validateNoteName(name){
-    let errorMsg = this.state.validNoteMessage;
-    let hasError = false;
-    name = name.trim();
-    if(name.length < 3){
-      errorMsg = 'Please enter a note name at least 3 characters long';
+    fieldValue = fieldValue.trim();
+    if(fieldValue.length === 0) {
+      fieldErrors.name = 'Name is required';
       hasError = true;
-    } else {
-      errorMsg = '';
-      hasError = false;
     }
     this.setState({
-      validMessage: errorMsg, 
-      validNoteName: !hasError
-    })
-  }
+      validationMessages: fieldErrors,
+      nameValid: !hasError
+    }, this.formValid );
+}
 
-  validateNoteContent(content){
-    let errorMsg = this.state.validContentMessage;
-    let hasError = false;
-    content = content.trim();
-    if(content.length < 3){
-      errorMsg = 'Please enter content that is at least 3 characters long';
-      hasError = true;
-    } else {
-      errorMsg = '';
-      hasError = false;
-    }
+  formValid(){
     this.setState({
-      validContentMessage: errorMsg,
-      validContent: !hasError
-    })
+      formValid: this.state.nameValid
+    });
   }
-
-
-
+  updateName(name){
+    this.setState({name}, ()=>{this.validateName(name)});
+  }
 
   handleSubmit = e => {
     e.preventDefault()
@@ -77,13 +57,13 @@ export default class AddNote extends Component {
       folderId: e.target['note-folder-id'].value,
       modified: new Date(),
     }
-    fetch(`${config.API_ENDPOINT}/notes`, {
+      fetch(`${config.API_ENDPOINT}/notes`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify(newNote),
-    })
+      })
       .then(res => {
         if (!res.ok)
           return res.json().then(e => Promise.reject(e))
@@ -96,7 +76,10 @@ export default class AddNote extends Component {
       .catch(error => {
         console.error({ error })
       })
-  }
+    }
+      
+
+        
 
   render() {
     const { folders=[] } = this.context
@@ -109,6 +92,7 @@ export default class AddNote extends Component {
               Name
             </label>
             <input type='text' id='note-name-input' name='note-name' />
+            <ValidationError hasError={!this.state.name} message={this.state.validMessage.name}/>
           </div>
           <div className='field'>
             <label htmlFor='note-content-input'>
@@ -130,8 +114,7 @@ export default class AddNote extends Component {
             </select>
           </div>
           <div className='buttons'>
-          <ValidationError hasError={!this.state.folderValid} message={this.state.validMessage}/>
-            <button type='submit'>
+            <button type='submit' disabled={!this.state.formValid}>
               Add note
             </button>
           </div>
