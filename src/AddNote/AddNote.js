@@ -92,7 +92,7 @@ export default class AddNote extends Component {
               Name
             </label>
             <input type='text' id='note-name-input' name='note-name' />
-            <ValidationError hasError={!this.state.name} message={this.state.validMessage.name}/>
+             <ValidationError hasError={!this.state.name} message={this.state.validMessage.name}/>
           </div>
           <div className='field'>
             <label htmlFor='note-content-input'>
