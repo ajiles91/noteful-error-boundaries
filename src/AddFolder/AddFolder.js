@@ -22,31 +22,12 @@ export default class AddFolder extends Component {
       push: () => { }
     },
   }
-  static contextType = ApiContext;
 
-  validateName(fieldValue){
-    const fieldErrors = {...this.state.validationMessages};
-    let hasError = false;
-  
-    fieldValue = fieldValue.trim();
-    if(fieldValue.length === 0){
-      fieldErrors.name = 'Name is required';
-      hasError = true;
-    }
-    this.setState({
-      validationMessages: fieldErrors,
-      nameValid: !hasError
-    }, this.formValid);
-  }
-  formValid(){
-    this.setState({
-      formValid: this.state.nameValid
-    });
-  }
   updateName(name){
     this.setState({name}, ()=>{this.validateName(name)});
   }
-  
+
+  static contextType = ApiContext;
 
   handleSubmit = e => {
     e.preventDefault()
@@ -60,9 +41,9 @@ export default class AddFolder extends Component {
       },
       body: JSON.stringify(folder),
     })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
+    .then(res => {
+      if (!res.ok)
+        return res.json().then(e => Promise.reject(e))
         return res.json()
       })
       .then(folder => {
@@ -70,13 +51,43 @@ export default class AddFolder extends Component {
         this.props.history.push(`/folder/${folder.id}`)
       })
       .catch(error => {
-        console.error('folder added', { error })
+        console.error({ error })
       })
       
+  }
+
+  validateName(fieldValue) {
+    const fieldErrors = {...this.state.validationMessages};
+    let hasError = false;
+
+    fieldValue = fieldValue.trim();
+    if (fieldValue.length === 0) {
+      fieldErrors.name = 'Name is required';
+      hasError = true;
+    } else {
+      if (fieldValue.length < 3) {
+        fieldErrors.name = 'Name must be at least 3 characters long';
+        hasError = true;
+      } else {
+        fieldErrors.name = '';
+        hasError = false;
+      }
     }
+
+    this.setState({
+      validationMessages: fieldErrors,
+      nameValid: !hasError
+    }, () => {
+      this.validateForm();
+    });
+  }
+
+  validateForm = () => {
+    this.setState({
+        formValid: this.state.nameValid
+    });
+  }
   
-
-
   render() {
     return (
       <section className='AddFolder'>
@@ -86,7 +97,7 @@ export default class AddFolder extends Component {
             <label htmlFor='folder-name-input'>
               Name
             </label>
-            <ValidationError hasError={!this.state.folderValid} message={this.state.validMessage}/>
+            
             <input type='text' id='folder-name-input' name='folder-name' />
            
           </div>
@@ -96,6 +107,7 @@ export default class AddFolder extends Component {
             </button>
           </div>
         </NotefulForm>
+        <ValidationError hasError={!this.state.folderValid} message={this.state.validMessage}/>
       </section>
     )
   }

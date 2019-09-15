@@ -7,15 +7,15 @@ describe(`AddNote component`, () => {
   const stubFolders = [
     {
       "id": "b0715efe-ffaf-11e8-8eb2-f2801f1b9fd1",
-      "name": "Important"
+      "name": "Folder One"
     },
     {
       "id": "b07161a6-ffaf-11e8-8eb2-f2801f1b9fd1",
-      "name": "Super"
+      "name": "Folder Two"
     },
     {
       "id": "b07162f0-ffaf-11e8-8eb2-f2801f1b9fd1",
-      "name": "Spangley"
+      "name": "Folder Three"
     }
   ]
 
