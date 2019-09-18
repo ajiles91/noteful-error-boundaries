@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ApiContext from '../ApiContext'
 import config from '../config'
+import PropTypes from 'prop-types'
 import './Note.css'
 
 export default class Note extends React.Component {
@@ -27,7 +28,7 @@ export default class Note extends React.Component {
           // return res.json().then(e => Promise.reject(e))
           return res.then(e => Promise.reject(e))
         // return res.json()
-        return res
+        // return res
       })
       .then(() => {
         this.context.deleteNote(noteId)
@@ -69,4 +70,9 @@ export default class Note extends React.Component {
       </div>
     )
   }
+}
+
+Note.propTypes = {
+  note_name: PropTypes.string,
+  note_id: PropTypes.number
 }
